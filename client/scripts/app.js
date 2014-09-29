@@ -34,9 +34,10 @@ var app = {
     $.ajax({
       type: 'GET',
       data: {order: "-createdAt"},
-      contentType: "application/jsonp",
+      contentType: "application/json",
       url: "https://api.parse.com/1/classes/chatterbox",
       success: function(data){
+       console.log(data);
         app.clearMessages();
         app.displayMessages(data);
         app.displayRooms(data);
