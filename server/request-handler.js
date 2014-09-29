@@ -19,20 +19,32 @@ exports.handleRequest = function(request, response) {
    * http://nodemanual.org/0.8.14/nodejs_ref_guide/http.html */
   console.log("Serving request type " + request.method + " for url " + request.url);
 
-  var statusCode = 200;
+  var successCode = 200;
   console.log(request.url);
-  /* Without this line, this server wouldn't work. See the note
+ /* Without this line, this server wouldn't work. See the note
    * below about CORS. */
   var headers = defaultCorsHeaders;
+  if (request.method === 'GET'){
+    if (request.url === "/log"){
+      headers['Content-Type'] = "application/json";
+      response.writeHead(successCode, headers);
+      response.end('successful request');
+    } else if(request.url === '/classes/messages') {
+      headers['Content-Type'] = "application/json";
+      response.writeHead(successCode, headers);
+      response.end(JSON.stringify(exports.messageStorage));
+    } else if (request.url === '/'){
+      headers['Content-Type'] = "application/json";
+      response.writeHead(successCode, headers);
+      response.end(JSON.stringify({1: 'test'}));
+    } else {
+      response.writeHead(404, headers);
+      response.end('Error 404: Not Found!');
+    }
+  }
 
-  if (request.url === '/classes/messages') {
-    headers['Content-Type'] = "application/json";
-    response.writeHead(statusCode, headers);
-    response.end(JSON.stringify({1: 'test'}));
-  } else if (request.url === '/'){
-    headers['Content-Type'] = "application/json";
-    response.writeHead(statusCode, headers);
-    response.end(JSON.stringify({1: 'test'}));
+
+  if (request.method === "POST"){
   }
   /* .writeHead() tells our server what HTTP status code to send back */
 
@@ -53,3 +65,5 @@ var defaultCorsHeaders = {
   "access-control-allow-headers": "content-type, accept",
   "access-control-max-age": 10 // Seconds.
 };
+
+exports.messageStorage = [];

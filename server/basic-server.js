@@ -6,10 +6,10 @@ var handle = require('./request-handler.js');
  * standard port for HTTP servers is port 80, but that port is
  * normally already claimed by another server and/or not accessible
  * so we'll use a higher port number that is not likely to be taken: */
-var messageStorage = ["dowop, dopop, dostop"];
-var getMessages = function(){
-  return messageStorage;
-}
+// var messageStorage = ["dowop, dopop, dostop"];
+// var getMessages = function(){
+//   return messageStorage;
+// }
 var port = 3000;
 
 /* For now, since you're running this server on your local machine,
