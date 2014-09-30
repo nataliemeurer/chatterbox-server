@@ -26,18 +26,12 @@ exports.handleRequest = function(request, response) {
   // GET REQUESTS
   if (request.method === 'GET'){
     if (request.url === "/log"){
-      response.writeHead(getSuccessCode, headers);
-      response.end('successful request');
+      returnResponse(response, JSON.stringify({results: exports.messageStorage}), getSuccessCode);
     } else if( request.url === '/classes/room1' ){
-      response.writeHead(getSuccessCode, headers);
-      response.end(JSON.stringify({results: exports.messageStorage}));
+      returnResponse(response, JSON.stringify({results: exports.messageStorage}), getSuccessCode);
     } else if(request.url === '/classes/messages') {
       returnResponse(response, JSON.stringify({results: exports.messageStorage}), getSuccessCode);
-      // response.writeHead(getSuccessCode, headers);
-      // response.end(JSON.stringify({results: exports.messageStorage}));
     } else if (request.url === '/'){
-      response.writeHead(getSuccessCode, headers);
-      response.end();
     } else {
       response.writeHead(404, headers);
       response.end('Error 404: Not Found!');
