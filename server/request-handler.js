@@ -31,6 +31,10 @@ exports.handleRequest = function(request, response) {
       headers['Content-Type'] = "application/json";
       response.writeHead(getSuccessCode, headers);
       response.end('successful request');
+    } else if( request.url === '/classes/room1' ){
+      headers['Content-Type'] = "application/json";
+      response.writeHead(getSuccessCode, headers);
+      response.end("success");
     } else if(request.url === '/classes/messages') {
       headers['Content-Type'] = "application/json";
       response.writeHead(getSuccessCode, headers);

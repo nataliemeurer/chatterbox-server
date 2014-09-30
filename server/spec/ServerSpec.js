@@ -18,7 +18,7 @@ describe('Node Server Request Listener Function', function() {
     var req = new stubs.request('/classes/room1', 'GET');
     var res = new stubs.response();
 
-    handler.handler(req, res);
+    handler.handleRequest(req, res);
 
     expect(res._responseCode).to.equal(200);
     expect(res._ended).to.equal(true);
