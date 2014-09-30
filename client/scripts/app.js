@@ -1,6 +1,7 @@
 // YOUR CODE HERE:
 
 var app = {
+
   init: function() {
     // Creates event listeners when new users and rooms get added to the chatterbox client
     $('.username').on('click', function(e){
@@ -16,7 +17,7 @@ var app = {
   send: function(message) {
     // Send a message to the parse server in the form of {object}
     $.ajax({
-      url: "https://api.parse.com/1/classes/chatterbox",
+      url: "http://127.0.0.1:3000/classes/messages",
       type: 'POST',
       data: JSON.stringify(message),
       contentType: 'application/json',
@@ -33,11 +34,11 @@ var app = {
     // Fetches new messages from the parse server
     $.ajax({
       type: 'GET',
-      data: {order: "-createdAt"},
+      // data: {order: "-createdAt"},
       contentType: "application/json",
-      url: "https://api.parse.com/1/classes/chatterbox",
+      url: "http://127.0.0.1:3000/classes/messages",
       success: function(data){
-       console.log(data);
+        console.log(data);
         app.clearMessages();
         app.displayMessages(data);
         app.displayRooms(data);
@@ -75,11 +76,9 @@ var app = {
     // inserts the new messages into the existing message list
     var messages = data.results;
     // app.clearMessages();
-    var messageCount = 0;
-    for (var i = 0; messageCount < 10; i++) {
+    for (var i = 0; i < 10; i++) {
       app.addMessage(messages[i]);
       app.newRoom(messages[i]);
-      messageCount++;
     }
   },
 
@@ -130,7 +129,7 @@ var app = {
     app.send(message);
     $('#message').val('');
   },
-  server: "https://api.parse.com/1/classes/chatterbox",
+  server: "http://127.0.0.1:3000/classes/messages",
   currentRoom: "lobby",
   roomList: [],
   username: null,

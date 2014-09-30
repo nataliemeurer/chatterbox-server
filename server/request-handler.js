@@ -9,23 +9,22 @@
 
 exports.handleRequest = function(request, response) {
 
-  /* the 'request' argument comes from nodes http module. It includes info about the
-  request - such as what URL the browser is requesting. */
-  // check type of request
-  // array of messages
-  // if GET, take the path and return the requested resource
-  // if POST, add the resource
-  /* Documentation for both request and response can be found at
-   * http://nodemanual.org/0.8.14/nodejs_ref_guide/http.html */
   console.log("Serving request type " + request.method + " for url " + request.url);
   var getSuccessCode = 200;
   var postSuccessCode = 201;
- /* Without this line, this server wouldn't work. See the note
-   * below about CORS. */
-
-
-   // GET REQUESTS
+  // Declare default headers to handle CORS
   var headers = defaultCorsHeaders;
+
+  // OPTIONS REQUESTS
+  if (request.method === 'OPTIONS') {
+      console.log('!OPTIONS');
+      headers["Access-Control-Allow-Credentials"] = false;
+      headers["Access-Control-Max-Age"] = '86400';
+      headers["Access-Control-Allow-Headers"] = "X-Parse-Application-Id, X-Parse-REST-API-Key, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept";
+      response.writeHead(200, headers);
+      response.end();
+  }
+  // GET REQUESTS
   if (request.method === 'GET'){
     if (request.url === "/log"){
       headers['Content-Type'] = "application/json";
@@ -81,21 +80,15 @@ exports.handleRequest = function(request, response) {
         data += chunk;
       });
       request.on('end', function(){
-        // console.log(JSON.parse(data));
         exports.messageStorage.unshift(JSON.parse(data));
         response.writeHead(postSuccessCode, headers);
         response.end(JSON.stringify({results: exports.messageStorage}));
       });
     } else {
-
+      response.writeHead(404, headers);
+      response.end('Error 404: Not Found!');
     }
   }
-  /* .writeHead() tells our server what HTTP status code to send back */
-
-  /* Make sure to always call response.end() - Node will not send
-   * anything back to the client until you do. The string you pass to
-   * response.end() will be the body of the response - i.e. what shows
-   * up in the browser.*/
 };
 
 /* These headers will allow Cross-Origin Resource Sharing (CORS).
@@ -106,7 +99,7 @@ exports.handleRequest = function(request, response) {
 var defaultCorsHeaders = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "access-control-allow-headers": "content-type, accept",
+  "access-control-allow-headers": "origin, x-csrftoken, content-type, accept",
   "access-control-max-age": 10 // Seconds.
 };
 
