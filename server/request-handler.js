@@ -50,12 +50,10 @@ exports.handleRequest = function(request, response) {
   // POST REQUESTS
   if (request.method === "POST"){
     if ( request.url === "/send" ){
-      // var data = "";
-      // request.on('data', function(chunk){
-      //   data += chunk;
-      // });
-      // request.on('end', function(){
-      //   exports.messageStorage.unshift(JSON.parse(data));
+      postData(request, function(data){
+        exports.messageStorage.unshift(JSON.parse(data));
+      });
+      returnResponse(response, JSON.stringify({results: exports.messageStorage}), postSuccessCode);
     } else if (request.url === "/classes/messages" ){
       postData(request, function(data){
         exports.messageStorage.unshift(JSON.parse(data));
@@ -67,17 +65,11 @@ exports.handleRequest = function(request, response) {
       })
       returnResponse(response, JSON.stringify({results: exports.messageStorage}), postSuccessCode);
     } else {
-      response.writeHead(404, headers);
-      response.end('Error 404: Not Found!');
+      returnResponse(response, 'Error 404: Not Found!', 404)
     }
   }
 };
 
-/* These headers will allow Cross-Origin Resource Sharing (CORS).
- * This CRUCIAL code allows this server to talk to websites that
- * are on different domains. (Your chat client is running from a url
- * like file://your/chat/client/index.html, which is considered a
- * different domain.) */
 var defaultCorsHeaders = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
