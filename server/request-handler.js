@@ -20,7 +20,6 @@ exports.handleRequest = function(request, response) {
   console.log("Serving request type " + request.method + " for url " + request.url);
   var getSuccessCode = 200;
   var postSuccessCode = 201;
-  console.log(request.url);
  /* Without this line, this server wouldn't work. See the note
    * below about CORS. */
 
@@ -50,14 +49,27 @@ exports.handleRequest = function(request, response) {
   if (request.method === "POST"){
     if ( request.url === "/send" ){
       headers['Content-Type'] = "application/json";
-      exports.messageStorage.push(request._postdata);
-      response.writeHead(postSuccessCode, headers);
-      response.end('POST successful');
+      var data = "";
+      request.on('data', function(chunk){
+        data += chunk;
+      });
+      request.on('end', function(){
+        exports.messageStorage.unshift(JSON.parse(data));
+        response.writeHead(postSuccessCode, headers);
+        response.end(JSON.stringify({results: exports.messageStorage}));
+      });
     } else if (request.url === "/classes/messages" ){
       headers['Content-Type'] = "application/json";
-      exports.messageStorage.push(request._postdata);
-      response.writeHead(postSuccessCode, headers);
-      response.end('POST successful');
+      var data = "";
+      request.on('data', function(chunk){
+        data += chunk;
+      });
+      request.on('end', function(){
+        // console.log(JSON.parse(data));
+        exports.messageStorage.unshift(JSON.parse(data));
+        response.writeHead(postSuccessCode, headers);
+        response.end(JSON.stringify({results: exports.messageStorage}));
+      });
     } else {
 
     }
