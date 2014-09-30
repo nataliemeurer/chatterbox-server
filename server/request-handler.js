@@ -5,7 +5,10 @@
  * this file and include it in basic-server.js so that it actually works.
  * *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html. */
 
-
+var returnResponse = function(response, data, code) {
+    response.writeHead(code, defaultCorsHeaders);
+    response.end(data);
+}
 
 exports.handleRequest = function(request, response) {
 
@@ -17,29 +20,22 @@ exports.handleRequest = function(request, response) {
 
   // OPTIONS REQUESTS
   if (request.method === 'OPTIONS') {
-      console.log('!OPTIONS');
-      headers["Access-Control-Allow-Credentials"] = false;
-      headers["Access-Control-Max-Age"] = '86400';
-      headers["Access-Control-Allow-Headers"] = "X-Parse-Application-Id, X-Parse-REST-API-Key, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept";
       response.writeHead(200, headers);
       response.end();
   }
   // GET REQUESTS
   if (request.method === 'GET'){
     if (request.url === "/log"){
-      headers['Content-Type'] = "application/json";
       response.writeHead(getSuccessCode, headers);
       response.end('successful request');
     } else if( request.url === '/classes/room1' ){
-      headers['Content-Type'] = "application/json";
       response.writeHead(getSuccessCode, headers);
       response.end(JSON.stringify({results: exports.messageStorage}));
     } else if(request.url === '/classes/messages') {
-      headers['Content-Type'] = "application/json";
-      response.writeHead(getSuccessCode, headers);
-      response.end(JSON.stringify({results: exports.messageStorage}));
+      returnResponse(response, JSON.stringify({results: exports.messageStorage}), getSuccessCode);
+      // response.writeHead(getSuccessCode, headers);
+      // response.end(JSON.stringify({results: exports.messageStorage}));
     } else if (request.url === '/'){
-      headers['Content-Type'] = "application/json";
       response.writeHead(getSuccessCode, headers);
       response.end();
     } else {
@@ -51,7 +47,6 @@ exports.handleRequest = function(request, response) {
   // POST REQUESTS
   if (request.method === "POST"){
     if ( request.url === "/send" ){
-      headers['Content-Type'] = "application/json";
       var data = "";
       request.on('data', function(chunk){
         data += chunk;
@@ -62,19 +57,16 @@ exports.handleRequest = function(request, response) {
         response.end(JSON.stringify({results: exports.messageStorage}));
       });
     } else if (request.url === "/classes/messages" ){
-      headers['Content-Type'] = "application/json";
       var data = "";
       request.on('data', function(chunk){
         data += chunk;
       });
       request.on('end', function(){
-        // console.log(JSON.parse(data));
         exports.messageStorage.unshift(JSON.parse(data));
         response.writeHead(postSuccessCode, headers);
         response.end(JSON.stringify({results: exports.messageStorage}));
       });
     } else if (request.url === "/classes/room1" ){
-      headers['Content-Type'] = "application/json";
       var data = "";
       request.on('data', function(chunk){
         data += chunk;
@@ -100,7 +92,8 @@ var defaultCorsHeaders = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
   "access-control-allow-headers": "origin, x-csrftoken, content-type, accept",
-  "access-control-max-age": 10 // Seconds.
+  "access-control-max-age": 10,
+  "content-type": "application/json"
 };
 
 exports.messageStorage = [];
