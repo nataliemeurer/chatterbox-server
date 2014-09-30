@@ -34,7 +34,7 @@ exports.handleRequest = function(request, response) {
     } else if( request.url === '/classes/room1' ){
       headers['Content-Type'] = "application/json";
       response.writeHead(getSuccessCode, headers);
-      response.end("success");
+      response.end(JSON.stringify({results: exports.messageStorage}));
     } else if(request.url === '/classes/messages') {
       headers['Content-Type'] = "application/json";
       response.writeHead(getSuccessCode, headers);
@@ -74,6 +74,18 @@ exports.handleRequest = function(request, response) {
         response.writeHead(postSuccessCode, headers);
         response.end(JSON.stringify({results: exports.messageStorage}));
       });
+    } else if (request.url === "/classes/room1" ){
+      headers['Content-Type'] = "application/json";
+      var data = "";
+      request.on('data', function(chunk){
+        data += chunk;
+      });
+      request.on('end', function(){
+        // console.log(JSON.parse(data));
+        exports.messageStorage.unshift(JSON.parse(data));
+        response.writeHead(postSuccessCode, headers);
+        response.end(JSON.stringify({results: exports.messageStorage}));
+      });
     } else {
 
     }
@@ -97,8 +109,5 @@ var defaultCorsHeaders = {
   "access-control-allow-headers": "content-type, accept",
   "access-control-max-age": 10 // Seconds.
 };
-//{ username: ,
-  // text: ,
 
-// }
 exports.messageStorage = [];
