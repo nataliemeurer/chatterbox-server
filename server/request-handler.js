@@ -10,6 +10,16 @@ var returnResponse = function(response, data, code) {
     response.end(data);
 }
 
+var postData = function(request, callback) {
+  var data = "";
+  request.on('data', function(chunk){
+    data += chunk;
+  });
+  request.on('end', function(){
+    callback(data);
+  });
+};
+
 exports.handleRequest = function(request, response) {
 
   console.log("Serving request type " + request.method + " for url " + request.url);
@@ -24,6 +34,7 @@ exports.handleRequest = function(request, response) {
       response.end();
   }
   // GET REQUESTS
+
   if (request.method === 'GET'){
     if (request.url === "/log"){
       returnResponse(response, JSON.stringify({results: exports.messageStorage}), getSuccessCode);
@@ -31,45 +42,30 @@ exports.handleRequest = function(request, response) {
       returnResponse(response, JSON.stringify({results: exports.messageStorage}), getSuccessCode);
     } else if(request.url === '/classes/messages') {
       returnResponse(response, JSON.stringify({results: exports.messageStorage}), getSuccessCode);
-    } else if (request.url === '/'){
     } else {
-      response.writeHead(404, headers);
-      response.end('Error 404: Not Found!');
+      returnResponse(response, 'Error 404: Not Found!', 404)
     }
   }
 
   // POST REQUESTS
   if (request.method === "POST"){
     if ( request.url === "/send" ){
-      var data = "";
-      request.on('data', function(chunk){
-        data += chunk;
-      });
-      request.on('end', function(){
-        exports.messageStorage.unshift(JSON.parse(data));
-        response.writeHead(postSuccessCode, headers);
-        response.end(JSON.stringify({results: exports.messageStorage}));
-      });
+      // var data = "";
+      // request.on('data', function(chunk){
+      //   data += chunk;
+      // });
+      // request.on('end', function(){
+      //   exports.messageStorage.unshift(JSON.parse(data));
     } else if (request.url === "/classes/messages" ){
-      var data = "";
-      request.on('data', function(chunk){
-        data += chunk;
-      });
-      request.on('end', function(){
+      postData(request, function(data){
         exports.messageStorage.unshift(JSON.parse(data));
-        response.writeHead(postSuccessCode, headers);
-        response.end(JSON.stringify({results: exports.messageStorage}));
       });
+      returnResponse(response, JSON.stringify({results: exports.messageStorage}), postSuccessCode);
     } else if (request.url === "/classes/room1" ){
-      var data = "";
-      request.on('data', function(chunk){
-        data += chunk;
-      });
-      request.on('end', function(){
+      postData(request, function(data){
         exports.messageStorage.unshift(JSON.parse(data));
-        response.writeHead(postSuccessCode, headers);
-        response.end(JSON.stringify({results: exports.messageStorage}));
-      });
+      })
+      returnResponse(response, JSON.stringify({results: exports.messageStorage}), postSuccessCode);
     } else {
       response.writeHead(404, headers);
       response.end('Error 404: Not Found!');
