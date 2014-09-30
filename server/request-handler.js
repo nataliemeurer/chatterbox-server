@@ -20,6 +20,19 @@ var postData = function(request, callback) {
   });
 };
 
+var requestTypes = {
+  getSuccessCode: 200,
+  postSuccessCode: 201,
+  headers: defaultCorsHeaders,
+
+  'OPTIONS': "test",
+
+  'GET': "test",
+
+  'POST': "test"
+
+};
+
 exports.handleRequest = function(request, response) {
 
   console.log("Serving request type " + request.method + " for url " + request.url);
@@ -36,15 +49,15 @@ exports.handleRequest = function(request, response) {
   // GET REQUESTS
 
   if (request.method === 'GET'){
-    if (request.url === "/log"){
       returnResponse(response, JSON.stringify({results: exports.messageStorage}), getSuccessCode);
-    } else if( request.url === '/classes/room1' ){
-      returnResponse(response, JSON.stringify({results: exports.messageStorage}), getSuccessCode);
-    } else if(request.url === '/classes/messages') {
-      returnResponse(response, JSON.stringify({results: exports.messageStorage}), getSuccessCode);
-    } else {
-      returnResponse(response, 'Error 404: Not Found!', 404)
-    }
+    // if (request.url === "/log"){
+    // } else if( request.url === '/classes/room1' ){
+    //   returnResponse(response, JSON.stringify({results: exports.messageStorage}), getSuccessCode);
+    // } else if(request.url === '/classes/messages') {
+    //   returnResponse(response, JSON.stringify({results: exports.messageStorage}), getSuccessCode);
+    // } else {
+    //   returnResponse(response, 'Error 404: Not Found!', 404)
+    // }
   }
 
   // POST REQUESTS
