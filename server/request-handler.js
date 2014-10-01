@@ -1,3 +1,19 @@
+var fs = require('fs');
+
+exports.messageStorage = [];
+
+var writeToFile = function(data){
+  exports.messageStorage.unshift(JSON.parse(data));
+  fs.writeFile('messages.json', JSON.stringify(exports.messageStorage));
+}
+
+var readFromFile = function(file, callback){
+  var message = '';
+  fs.readFile(file, function(err, data){
+    message += data;
+    callback(message);
+  });
+}
 
 var returnResponse = function(response, data, code) {
     response.writeHead(code, defaultCorsHeaders);
@@ -16,7 +32,7 @@ var postData = function(request, callback) {
 
 exports.handleRequest = function(request, response) {
 
-  console.log("Serving request type " + request.method + " for url " + request.url);
+  // console.log("Serving request type " + request.method + " for url " + request.url);
   var getSuccessCode = 200;
   var postSuccessCode = 201;
   // Declare default headers to handle CORS
@@ -28,11 +44,12 @@ exports.handleRequest = function(request, response) {
       response.end();
       break;
     case 'GET':
+      readFromFile('messages.json', function(message){ exports.messageStorage = JSON.parse(message)});
       returnResponse(response, JSON.stringify({results: exports.messageStorage}), getSuccessCode);
       break;
     case 'POST':
       postData(request, function(data){
-        exports.messageStorage.unshift(JSON.parse(data));
+        writeToFile(data);
       });
       returnResponse(response, JSON.stringify({results: exports.messageStorage}), postSuccessCode);
       break;
@@ -49,4 +66,3 @@ var defaultCorsHeaders = {
   "content-type": "application/json"
 };
 
-exports.messageStorage = [];
